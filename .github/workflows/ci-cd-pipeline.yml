@@ -1,0 +1,43 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master  # Trigger the pipeline when code is pushed to the 'master' branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This specifies the operating system for the runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # This checks out your code to the runner
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Set the Python version you are using (adjust if necessary)
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flask
+
+    - name: Run tests
+      run: |
+        pytest tests/  # Run your tests (assuming you have a 'tests' directory with tests)
+
+  deploy:
+    runs-on: ubuntu-latest  # This is for deployment; also uses Ubuntu
+    needs: build  # Ensure that the deploy step runs only after the build is successful
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2  # Check out the latest code again for the deploy step
+
+    - name: Deploy to server
+      run: |
+        # This can be customized to deploy to your EC2 or other environment
+        # For example, SSH into your EC2 and pull the latest changes
+        ssh -o StrictHostKeyChecking=no user@your-ec2-instance "cd /path/to/your/project && git pull origin master && docker-compose restart"
+
