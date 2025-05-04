@@ -23,9 +23,6 @@ jobs:
       - name: Build App Image
         run: docker build -t sage -f Dockerfile .
 
-      - name: Build AutoScaler Image
-        run: docker build -t autoscaler -f Dockerfile.autoscaler .
-
       - name: Run App Container
         run: docker run -d --name app_5001 -p 5001:5001 sage
 
