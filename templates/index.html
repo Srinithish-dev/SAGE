@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elective Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            text-align: center;
+            padding-top: 50px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 40%;
+            margin: auto;
+        }
+        .logo {
+            width: 250px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #0b3d91;
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input, select {
+            width: 80%;
+            padding: 8px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .submit-btn {
+            background-color: #0b3d91;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 85%;
+        }
+        .submit-btn:hover {
+            background-color: #092c6c;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="https://cdn.universitykart.com//Content/upload/admin/sb1tlarc.t4v.png" alt="SRM Logo" class="logo">
+        <h2>Select Your Elective</h2>
+        <form action="/submit" method="post">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="elective">Choose an elective:</label>
+            <select id="elective" name="elective">
+                {% for elective in electives %}
+                    <option value="{{ elective }}">{{ elective }}</option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+            <input type="submit" value="Submit" class="submit-btn">
+        </form>
+    </div>
+
+</body>
+</html>

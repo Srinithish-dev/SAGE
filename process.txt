@@ -1,0 +1,10 @@
+sudo docker build -t sage .
+
+sudo docker run -d --name app_5001 -p 5001:5001 -e FLASK_PORT=5001 sage ### To initialise the one container with our app.py
+
+sudo docker run -d --name nginx -p 80:80 -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro nginx ### To initialise nginx to listen to port 80
+
+sudo python3 auto_scaler.py
+
+sudo ab -n 5000 -c 100 http://localhost:80/
+
