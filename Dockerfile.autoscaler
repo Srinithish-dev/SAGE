@@ -1,0 +1,9 @@
+FROM python:3.9-slim
+
+WORKDIR /scaler
+
+COPY auto_scaler.py .
+
+RUN pip install docker
+
+CMD ["python", "auto_scaler.py"]
