@@ -15,8 +15,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Create NGINX config dir
-        run: mkdir -p nginx_conf && cp default.conf nginx_conf/
+      - name: Prepare NGINX config
+        run: |
+          mkdir -p nginx_conf
+          cp nginx/default.conf nginx_conf/
+      
+      - name: Run NGINX Container
+        run: |
+          docker run -d --name nginx \
+            --network sage-net \
+            -p 80:80 \
+            -v ${{ github.workspace }}/nginx_conf:/etc/nginx/conf.d:ro \
+            nginx
+
 
       - name: Build App Image
         run: docker build -t sage -f Dockerfile .
