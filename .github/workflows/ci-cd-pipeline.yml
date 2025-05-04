@@ -19,15 +19,6 @@ jobs:
         run: |
           mkdir -p nginx_conf
           cp nginx/default.conf nginx_conf/
-      
-      - name: Run NGINX Container
-        run: |
-          docker run -d --name nginx \
-            --network sage-net \
-            -p 80:80 \
-            -v ${{ github.workspace }}/nginx_conf:/etc/nginx/conf.d:ro \
-            nginx
-
 
       - name: Build App Image
         run: docker build -t sage -f Dockerfile .
@@ -39,8 +30,14 @@ jobs:
         run: docker run -d --name app_5001 -p 5001:5001 sage
 
       - name: Run NGINX Container
-        run: docker run -d --name nginx -p 80:80 -v ${{ github.workspace }}/nginx_conf/default.conf:/etc/nginx/conf.d/default.conf nginx
+        run: |
+          docker run -d --name nginx \
+            -p 80:80 \
+            -v ${{ github.workspace }}/nginx_conf/default.conf:/etc/nginx/conf.d/default.conf \
+            nginx
 
       - name: Run AutoScaler Container
-        run: docker run -d --name scaler -v /var/run/docker.sock:/var/run/docker.sock autoscaler
-
+        run: |
+          docker run -d --name scaler \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            autoscaler
