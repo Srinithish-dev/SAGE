@@ -33,7 +33,7 @@ jobs:
       - name: Prepare NGINX config
         run: |
           mkdir -p nginx_conf
-          cp default.conf nginx_conf/
+          cp nginx/default.conf nginx_conf/
 
       - name: Run NGINX Container
         run: |
