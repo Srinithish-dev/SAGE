@@ -7,7 +7,7 @@ import re
 client = docker.from_env()
 container_base_name = "app"
 base_port = 5001
-max_cpu = 80.0
+max_cpu = 50.0
 min_cpu = 15.0
 idle_time = {}
 scale_down_wait = 30 # seconds
