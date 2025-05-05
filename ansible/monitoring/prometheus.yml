@@ -1,0 +1,85 @@
+- name: Install and configure Prometheus
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create prometheus user
+      ansible.builtin.user:
+        name: prometheus
+        shell: /bin/false
+        create_home: no
+
+    - name: Create Prometheus directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: prometheus
+        group: prometheus
+        mode: '0755'
+      loop:
+        - /etc/prometheus
+        - /var/lib/prometheus
+
+    - name: Download Prometheus archive
+      ansible.builtin.get_url:
+        url: https://github.com/prometheus/prometheus/releases/download/v2.46.0/prometheus-2.46.0.linux-amd64.tar.gz
+        dest: /tmp/prometheus.tar.gz
+
+    - name: Extract Prometheus archive
+      ansible.builtin.unarchive:
+        src: /tmp/prometheus.tar.gz
+        dest: /tmp/
+        remote_src: yes
+
+    - name: Move console libraries and prometheus.yml
+      ansible.builtin.copy:
+        remote_src: yes
+        src: "/tmp/prometheus-2.46.0.linux-amd64/{{ item }}"
+        dest: "/etc/prometheus/{{ item }}"
+        owner: prometheus
+        group: prometheus
+      loop:
+        - console_libraries
+        - consoles
+        - prometheus.yml
+
+    - name: Move Prometheus binary
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /tmp/prometheus-2.46.0.linux-amd64/prometheus
+        dest: /usr/local/bin/prometheus
+        mode: '0755'
+        owner: prometheus
+        group: prometheus
+
+    - name: Create systemd service for Prometheus
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/prometheus.service
+        content: |
+          [Unit]
+          Description=Prometheus
+          Wants=network-online.target
+          After=network-online.target
+
+          [Service]
+          User=prometheus
+          Group=prometheus
+          Type=simple
+          ExecStart=/usr/local/bin/prometheus \
+            --config.file /etc/prometheus/prometheus.yml \
+            --storage.tsdb.path /var/lib/prometheus/ \
+            --web.console.templates=/etc/prometheus/consoles \
+            --web.console.libraries=/etc/prometheus/console_libraries
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Start and enable Prometheus
+      ansible.builtin.systemd:
+        name: prometheus
+        state: started
+        enabled: true

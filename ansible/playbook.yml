@@ -1,0 +1,47 @@
+---
+- name: Install required packages on EC2 instance
+  hosts: sage_ec2
+  become: true  # Run tasks as root
+  tasks:
+
+    # Update apt cache
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    # Install Python 3
+    - name: Install Python 3
+      apt:
+        name: python3
+        state: present
+
+    # Install pip3
+    - name: Install pip3
+      apt:
+        name: python3-pip
+        state: present
+
+    # Install Docker
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    # Install Docker Compose
+    - name: Install Docker Compose
+      shell: |
+        curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        chmod +x /usr/local/bin/docker-compose
+
+    # Ensure Docker service is running
+    - name: Ensure Docker service is running
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    # (Optional) Install Git if not already installed
+    - name: Install Git
+      apt:
+        name: git
+        state: present
